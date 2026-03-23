@@ -1,11 +1,10 @@
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Zenject;
 
 namespace JustMoby_TestWork
 {
-    public sealed class PlayerInputService : IInitializable, ITickable, IDisposable
+    public sealed class PlayerInputService : IInitializable, ITickable, System.IDisposable
     {
         private readonly InputActions _inputActions;
         private readonly ICursorService _cursorService;
@@ -22,6 +21,7 @@ namespace JustMoby_TestWork
 
         public void Initialize()
         {
+            _inputActions.Enable();
             _inputActions.Player.Fire.performed += OnFirePerformed;
             _inputActions.Player.CursorMode.performed += OnCursorModePerformed;
 
@@ -32,6 +32,8 @@ namespace JustMoby_TestWork
         {
             _inputActions.Player.Fire.performed -= OnFirePerformed;
             _inputActions.Player.CursorMode.performed -= OnCursorModePerformed;
+            _inputActions.Disable();
+            _inputActions.Dispose();
         }
 
         public void Tick()
