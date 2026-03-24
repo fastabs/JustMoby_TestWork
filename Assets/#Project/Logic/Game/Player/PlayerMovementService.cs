@@ -34,8 +34,6 @@ namespace JustMoby_TestWork
             var moveSpeed = _statsProvider.MoveSpeed.Value;
 
             var sqrMagnitude = direction.sqrMagnitude;
-            if (_player.Animator != null)
-                _player.Animator.SetFloat(MoveSpeedParameter, sqrMagnitude * moveSpeed);
 
             if (sqrMagnitude < 0.01f)
                 return;

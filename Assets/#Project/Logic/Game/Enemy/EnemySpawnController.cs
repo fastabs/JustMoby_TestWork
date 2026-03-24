@@ -13,7 +13,6 @@ namespace JustMoby_TestWork
         private readonly IConfigRepository _config;
         private readonly PrefabsLibrary _prefabs;
         private readonly PauseService _pauseService;
-        private readonly SignalBus _signalBus;
         private readonly DiContainer _container;
 
         private readonly List<Enemy> _enemies;
@@ -21,13 +20,12 @@ namespace JustMoby_TestWork
         private bool _isFirstSpawnDone;
 
         public EnemySpawnController(IConfigRepository config, PrefabsLibrary prefabs,
-            SignalBus signalBus, PauseService pauseService, DiContainer container)
+            PauseService pauseService, DiContainer container)
         {
             _enemies = new List<Enemy>();
 
             _config = config;
             _prefabs = prefabs;
-            _signalBus = signalBus;
             _pauseService = pauseService;
             _container = container;
         }
@@ -42,7 +40,6 @@ namespace JustMoby_TestWork
                 : FirstSpawnDelaySeconds;
 
             _timer += Time.deltaTime;
-            _signalBus.Fire(new EnemySpawnTimerSignal(spawnInterval - _timer));
 
             if (_timer < spawnInterval)
                 return;

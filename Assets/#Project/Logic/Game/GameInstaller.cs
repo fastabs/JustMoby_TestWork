@@ -36,6 +36,7 @@ namespace JustMoby_TestWork
             Container.BindInterfacesAndSelfTo<PlayerInputController>().AsSingle();
             Container.BindInterfacesAndSelfTo<SaveGameService>().AsSingle();
             Container.BindInterfacesAndSelfTo<GameInitService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<LayerCollisionInitService>().AsSingle();
         }
 
         private void BindSignals()
@@ -49,7 +50,6 @@ namespace JustMoby_TestWork
             Container.DeclareSignal<ChangeMaxHealthSignal>();
             Container.DeclareSignal<DeathSignal>();
             Container.DeclareSignal<HitEnemySignal>();
-            Container.DeclareSignal<EnemySpawnTimerSignal>();
             Container.DeclareSignal<UpgradeAppliedSignal>();
             Container.DeclareSignal<UpgradeCanceledSignal>();
             Container.DeclareSignal<StatUpgradeValueSignal>();

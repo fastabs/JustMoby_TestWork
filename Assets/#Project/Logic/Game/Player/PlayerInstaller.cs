@@ -11,8 +11,8 @@ namespace JustMoby_TestWork
             diContainer.BindInterfacesAndSelfTo<HealthParameter>().AsSingle();
             diContainer.BindInterfacesAndSelfTo<PlayerMovementService>().AsSingle();
             diContainer.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
-            diContainer.BindInterfacesAndSelfTo<PlayerInitService>().AsSingle();
             diContainer.BindInterfacesAndSelfTo<StatsUpgradeService>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<PlayerInitService>().AsSingle();
         }
     }
 }

@@ -66,7 +66,7 @@ namespace JustMoby_TestWork
 
         private void OnDead(DeathSignal signal)
         {
-            if (signal.Health != _healthParameter)
+            if (signal.Health != _healthParameter || IsDead)
                 return;
 
             IsDead = true;
