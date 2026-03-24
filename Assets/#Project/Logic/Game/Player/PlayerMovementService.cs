@@ -5,46 +5,104 @@ namespace JustMoby_TestWork
     public interface IPlayerMovementService
     {
         void Move(Vector2 delta);
-        void Rotate(Vector2 delta);
+        void RotateY(float value);
+        void RotateX(float value);
+        void SetDirectRotation(Vector2 value);
     }
 
     public sealed class PlayerMovementService : IPlayerMovementService
     {
-        private readonly GameConfiguration _configuration;
-        private readonly Transform _transform;
+        private static readonly int MoveSpeedParameter = Animator.StringToHash("MoveSpeed");
+        private readonly IConfigRepository _configRepository;
+        private readonly IPlayerStatsProvider _statsProvider;
+        private readonly Player _player;
 
         private Vector2 _rotation;
 
-        public PlayerMovementService(Transform transform, GameConfiguration configuration)
+        public PlayerMovementService(IConfigRepository configRepository,
+            IPlayerStatsProvider statsProvider, Player player)
         {
-            _transform = transform;
-            _configuration = configuration;
+            _configRepository = configRepository;
+            _statsProvider = statsProvider;
+            _player = player;
 
-            _rotation = _transform.localEulerAngles;
+            _rotation = _player.transform.localEulerAngles;
         }
 
         public void Move(Vector2 direction)
         {
-            if (direction.sqrMagnitude < 0.01)
+            var moveSpeed = _statsProvider.MoveSpeed.Value;
+
+            var sqrMagnitude = direction.sqrMagnitude;
+            if (_player.Animator != null)
+                _player.Animator.SetFloat(MoveSpeedParameter, sqrMagnitude * moveSpeed);
+
+            if (sqrMagnitude < 0.01f)
                 return;
 
-            var moveSpeed = _configuration.Player.MoveSpeed;
-            var scaledMoveSpeed = moveSpeed * Time.deltaTime;
+            var scaledMoveSpeed = moveSpeed * Time.fixedDeltaTime;
+            var move = Quaternion.Euler(0, _player.transform.eulerAngles.y, 0) * new Vector3(direction.x, 0, direction.y);
 
-            var move = Quaternion.Euler(0, _transform.eulerAngles.y, 0) * new Vector3(direction.x, 0, direction.y);
-            _transform.position += move * scaledMoveSpeed;
+            if (_player.Rigidbody != null)
+            {
+                var newPosition = _player.Rigidbody.position + move * scaledMoveSpeed;
+                _player.Rigidbody.MovePosition(newPosition);
+            }
+            else
+            {
+                _player.transform.position += move * scaledMoveSpeed;
+            }
         }
 
-        public  void Rotate(Vector2 rotate)
+        public void RotateY(float rotate)
         {
-            if (rotate.sqrMagnitude < 0.01)
+            if (Mathf.Abs(rotate) < 0.01f)
                 return;
 
-            var rotationSpeed = _configuration.Player.RotationSpeed;
+            var rotationSpeed = _configRepository.Player.RotationSpeed;
+            var scaledRotateSpeed = rotationSpeed * Time.fixedDeltaTime;
+
+            _rotation.y += rotate * scaledRotateSpeed;
+
+            var targetRotation = Quaternion.Euler(0, _rotation.y, 0);
+            if (_player.Rigidbody != null)
+                _player.Rigidbody.MoveRotation(targetRotation);
+            else
+                _player.transform.rotation = targetRotation;
+        }
+
+        public void RotateX(float rotate)
+        {
+            if (Mathf.Abs(rotate) < 0.01f)
+                return;
+
+            var rotationSpeed = _configRepository.Player.RotationSpeed;
             var scaledRotateSpeed = rotationSpeed * Time.deltaTime;
-            _rotation.y += rotate.x * scaledRotateSpeed;
-            _rotation.x = Mathf.Clamp(_rotation.x - rotate.y * scaledRotateSpeed, -89, 89);
-            _transform.localEulerAngles = _rotation;
+
+            _rotation.x = Mathf.Clamp(_rotation.x - rotate * scaledRotateSpeed, -89, 89);
+
+            var head = _player.Head != null ? _player.Head : _player.transform;
+            var headEuler = head.localEulerAngles;
+            headEuler.x = _rotation.x;
+            head.localEulerAngles = headEuler;
+        }
+
+        public void SetDirectRotation(Vector2 value)
+        {
+            _rotation = value;
+
+            var targetRotation = Quaternion.Euler(0, _rotation.y, 0);
+            if (_player.Rigidbody != null)
+                _player.Rigidbody.MoveRotation(targetRotation);
+            else
+                _player.transform.rotation = targetRotation;
+
+            _rotation.x = Mathf.Clamp(_rotation.x, -89, 89);
+
+            var head = _player.Head != null ? _player.Head : _player.transform;
+            var headEuler = head.localEulerAngles;
+            headEuler.x = _rotation.x;
+            head.localEulerAngles = headEuler;
         }
     }
 }

@@ -5,13 +5,15 @@ namespace JustMoby_TestWork
 {
     public sealed class ProjectInstaller : MonoInstaller
     {
-        [SerializeField] private GameConfiguration gameConfiguration;
+        [SerializeField] private ConfigRepository gameConfiguration;
 
         public override void InstallBindings()
         {
-            Container.BindInstance(gameConfiguration).AsSingle();
+            Container.Bind<ConfigRepository>().FromInstance(gameConfiguration).AsSingle();
+            Container.Bind<IConfigRepository>().FromInstance(gameConfiguration).AsSingle();
             Container.BindInterfacesAndSelfTo<CursorService>().AsSingle();
             Container.BindInterfacesAndSelfTo<SceneService>().AsSingle();
+            Container.BindInterfacesAndSelfTo<SaveEntryRepository>().AsSingle();
         }
     }
 }

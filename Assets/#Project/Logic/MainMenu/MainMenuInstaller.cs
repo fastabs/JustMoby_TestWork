@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using System;
+using UnityEngine;
 using Zenject;
 
 namespace JustMoby_TestWork
@@ -9,7 +10,12 @@ namespace JustMoby_TestWork
 
         public override void InstallBindings()
         {
+            mainMenuUI ??= SceneObjectLocator.FindInScene<MainMenuUI>(gameObject.scene);
+            if (mainMenuUI == null)
+                throw new InvalidOperationException($"{nameof(MainMenuInstaller)} requires a {nameof(MainMenuUI)} in the MainMenu scene.");
+
             Container.BindInstance(mainMenuUI);
+            Container.QueueForInject(mainMenuUI);
             Container.BindInterfacesAndSelfTo<MainMenuService>().AsSingle();
         }
     }

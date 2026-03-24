@@ -1,0 +1,18 @@
+using Zenject;
+
+namespace JustMoby_TestWork
+{
+    public static class PlayerInstaller
+    {
+        public static void BindPlayerCore(this DiContainer diContainer)
+        {
+            diContainer.BindInterfacesAndSelfTo<PlayerLocator>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<PlayerStatsProvider>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<HealthParameter>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<PlayerMovementService>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<PlayerHealthService>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<PlayerInitService>().AsSingle();
+            diContainer.BindInterfacesAndSelfTo<StatsUpgradeService>().AsSingle();
+        }
+    }
+}
